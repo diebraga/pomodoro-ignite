@@ -1,23 +1,17 @@
 import styled from 'styled-components'
 
-type ButtonVariants = 'primary' | 'secondary' | 'success' | 'danger';
+type ButtonVariants = 'primary' | 'secondary' | 'success' | 'danger'
 
 interface ButtonProps {
-  variant?: ButtonVariants;
+  variant?: ButtonVariants
 }
 
 interface ButtonContaineProps {
-  variant: ButtonVariants;
+  variant: ButtonVariants
 }
 
 export function Button({ variant = 'primary' }: ButtonProps) {
-  return (
-    <ButtonContainer
-      variant={variant}
-    >
-      Button
-    </ButtonContainer>
-  )
+  return <ButtonContainer variant={variant}>Button</ButtonContainer>
 }
 
 const ButtonContainer = styled.button<ButtonContaineProps>`
