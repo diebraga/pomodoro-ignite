@@ -12,10 +12,24 @@ export function Home() {
             type="text"
             id="task"
             placeholder="Give a name to your project"
+            list="task-suggestion"
           />
 
+          <datalist id="task-suggestion">
+            <option value="Proj 1" />
+            <option value="Proj 2" />
+            <option value="Proj 3" />
+          </datalist>
+
           <label htmlFor="for">For</label>
-          <MinutsAmountInput type="number" id="for" placeholder="00" />
+          <MinutsAmountInput
+            type="number"
+            id="for"
+            placeholder="00"
+            step={5}
+            min={5}
+            max={60}
+          />
 
           <span>Minutes</span>
         </FormContainer>
@@ -140,6 +154,10 @@ const BaseInput = styled.input`
 
 const TaskInput = styled(BaseInput)`
   flex: 1;
+
+  &::-webkit-calendar-picker-indicator {
+    display: none !important;
+  }
 `
 
 const MinutsAmountInput = styled(BaseInput)`
