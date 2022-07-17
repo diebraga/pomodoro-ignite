@@ -8,10 +8,14 @@ export function Home() {
       <form>
         <FormContainer>
           <label htmlFor="task">{"I'm Going to work on"}</label>
-          <input type="text" id="task" />
+          <TaskInput
+            type="text"
+            id="task"
+            placeholder="Give a name to your project"
+          />
 
           <label htmlFor="for">For</label>
-          <input type="number" id="for" />
+          <MinutsAmountInput type="number" id="for" placeholder="00" />
 
           <span>Minutes</span>
         </FormContainer>
@@ -24,10 +28,10 @@ export function Home() {
           <span>0</span>
         </CountDownContainer>
 
-        <button type="submit">
+        <StartCountDownButton type="submit" disabled>
           <Play size={24} />
           Start
-        </button>
+        </StartCountDownButton>
       </form>
     </HomeContainer>
   )
@@ -84,4 +88,60 @@ const Divider = styled.div`
   overflow: hidden;
   display: flex;
   justify-content: center;
+`
+
+const StartCountDownButton = styled.button`
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 0.5rem;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  background: ${(p) => p.theme['green-500']};
+  color: ${(p) => p.theme['gray-100']};
+
+  &:not(:disabled):hover {
+    background: ${(p) => p.theme['green-700']};
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+`
+
+const BaseInput = styled.input`
+  background: transparent;
+  height: 2.5rem;
+  border: 0;
+  border-bottom: 2px solid ${(p) => p.theme['gray-500']};
+  font-size: 1.125rem;
+  font-weight: bold;
+  padding: 0 0.5rem;
+  color: ${(p) => p.theme['gray-100']};
+
+  &::placeholder {
+    color: ${(p) => p.theme['gray-500']};
+  }
+
+  &:focus {
+    box-shadow: none;
+    border-color: ${(p) => p.theme['gray-500']};
+  }
+`
+
+const TaskInput = styled(BaseInput)`
+  flex: 1;
+`
+
+const MinutsAmountInput = styled(BaseInput)`
+  width: 4rem;
 `
