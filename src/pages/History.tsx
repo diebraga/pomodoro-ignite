@@ -21,31 +21,41 @@ export function History() {
               <td>Task </td>
               <td>20 mins </td>
               <td>2 days ago </td>
-              <td>Done </td>
+              <td>
+                <Status statusColor="green">Done</Status>
+              </td>
             </tr>
             <tr>
               <td>Task </td>
               <td>20 mins </td>
               <td>2 days ago </td>
-              <td>Done </td>
+              <td>
+                <Status statusColor="yellow">Done</Status>
+              </td>
             </tr>
             <tr>
               <td>Task </td>
               <td>20 mins </td>
               <td>2 days ago </td>
-              <td>Done </td>
+              <td>
+                <Status statusColor="green">Done</Status>
+              </td>
             </tr>
             <tr>
               <td>Task </td>
               <td>20 mins </td>
               <td>2 days ago </td>
-              <td>Done </td>
+              <td>
+                <Status statusColor="green">Done</Status>
+              </td>
             </tr>
             <tr>
               <td>Task </td>
               <td>20 mins </td>
               <td>2 days ago </td>
-              <td>Done </td>
+              <td>
+                <Status statusColor="green">Done</Status>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -112,5 +122,23 @@ const HistoryList = styled.div`
         padding-right: 1.5rem;
       }
     }
+  }
+`
+
+interface StatusProps {
+  statusColor: 'yellow' | 'red' | 'green'
+}
+
+const Status = styled.div<StatusProps>`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: ${(p) => p.theme[`${p.statusColor}-500`]};
   }
 `
