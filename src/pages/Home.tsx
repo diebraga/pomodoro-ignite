@@ -13,15 +13,22 @@ const newCycleValidationScheme = zod.object({
     .max(60, `You can't create a task more than 1 hour long`),
 })
 
+type FormTypes = zod.infer<typeof newCycleValidationScheme>
+
 export function Home() {
-  const { register, handleSubmit, formState } = useForm({
+  const { register, handleSubmit, formState, reset } = useForm<FormTypes>({
     resolver: zodResolver(newCycleValidationScheme),
+    defaultValues: {
+      for: 0,
+      task: '',
+    },
   })
 
   const { errors, isSubmitting, isDirty } = formState
 
   function handleCreateNewCyclo(data: any) {
     console.log(data)
+    reset()
   }
 
   const isSubmitFormDisabled = !isDirty || isSubmitting
