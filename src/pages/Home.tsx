@@ -1,11 +1,44 @@
 import { Play } from 'phosphor-react'
-import React from 'react'
+import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as zod from 'zod'
+import { useEffect } from 'react'
+
+const newCycleValidationScheme = zod.object({
+  task: zod.string().min(1, 'Your task must have a name'),
+  for: zod
+    .number()
+    .min(5, `You can't create a task with less than 5 minutes`)
+    .max(60, `You can't create a task more than 1 hour long`),
+})
 
 export function Home() {
+  const { register, handleSubmit, formState } = useForm({
+    resolver: zodResolver(newCycleValidationScheme),
+  })
+
+  const { errors, isSubmitting, isDirty } = formState
+
+  function handleCreateNewCyclo(data: any) {
+    console.log(data)
+  }
+
+  const isSubmitFormDisabled = !isDirty || isSubmitting
+
+  useEffect(() => {
+    if (errors.task) {
+      alert(errors.task.message)
+      return
+    }
+    if (errors.for) {
+      alert(errors.for.message)
+    }
+  }, [errors])
+
   return (
     <HomeContainer>
-      <form>
+      <form onSubmit={handleSubmit(handleCreateNewCyclo)}>
         <FormContainer>
           <label htmlFor="task">{"I'm Going to work on"}</label>
           <TaskInput
@@ -13,6 +46,7 @@ export function Home() {
             id="task"
             placeholder="Give a name to your project"
             list="task-suggestion"
+            {...register('task')}
           />
 
           <datalist id="task-suggestion">
@@ -27,8 +61,7 @@ export function Home() {
             id="for"
             placeholder="00"
             step={5}
-            min={5}
-            max={60}
+            {...register('for', { valueAsNumber: true })}
           />
 
           <span>Minutes</span>
@@ -42,7 +75,7 @@ export function Home() {
           <span>0</span>
         </CountDownContainer>
 
-        <StartCountDownButton type="submit" disabled>
+        <StartCountDownButton type="submit" disabled={isSubmitFormDisabled}>
           <Play size={24} />
           Start
         </StartCountDownButton>
