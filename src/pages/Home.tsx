@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
 import { useEffect, useState } from 'react'
-import { useCountdown } from '../../src/hooks/useCountdown'
+import { differenceInSeconds } from 'date-fns'
 
 const newCycleValidationScheme = zod.object({
   task: zod.string().min(1, 'Your task must have a name'),
@@ -20,6 +20,7 @@ interface CycloTypes {
   id: string
   task: string
   for: number
+  startDate: Date
 }
 
 export function Home() {
@@ -42,6 +43,7 @@ export function Home() {
       for: data.for,
       id: String(cycles.length + 1),
       task: data.task,
+      startDate: new Date(),
     }
 
     setCycles((curr) => [...curr, cycle])
@@ -51,14 +53,38 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === cycleId)
 
+  useEffect(() => {
+    if (activeCycle) {
+      setInterval(() => {
+        setAmountSecondsPassed(
+          differenceInSeconds(new Date(), new Date(activeCycle.startDate)),
+        )
+      }, 1000)
+    }
+  }, [activeCycle])
+
   const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
-  const secondsAmount = currentSeconds / 60
+  const secondsAmount = currentSeconds % 60
 
   const minutes = String(minutesAmount).padStart(2, '0')
   const seconds = String(secondsAmount).padStart(2, '0')
+
+  function timeDisplay() {
+    const minutes = String(minutesAmount).padStart(2, '0')
+    const seconds = String(secondsAmount).padStart(2, '0')
+
+    return {
+      minutesFirstChar: minutes.charAt(0),
+      minutesSecondChar: minutes.charAt(1),
+      secondsFirstChar: seconds.charAt(0),
+      secondsSecondChar: seconds.charAt(1),
+    }
+  }
+  console.log(`${minutes.charAt(0)}${minutes.charAt(1)}`)
+  console.log(`${seconds.charAt(0)}${seconds.charAt(1)}`)
 
   const isSubmitFormDisabled = !isDirty || isSubmitting
 
@@ -106,17 +132,17 @@ export function Home() {
         </FormContainer>
 
         <CountDownContainer>
-          <span>{minutes[0]}</span>
-          <span>{minutes[1]}</span>
+          <span>{timeDisplay().minutesFirstChar}</span>
+          <span>{timeDisplay().minutesSecondChar}</span>
           <Divider>:</Divider>
-          <span>{seconds[0]}</span>
-          <span>{seconds[0]}</span>
+          <span>{timeDisplay().secondsFirstChar}</span>
+          <span>{timeDisplay().secondsSecondChar}</span>
         </CountDownContainer>
 
         <StartCountDownButton
           type="submit"
           disabled={isSubmitFormDisabled}
-          onClick={() => {}}
+          onClick={() => { }}
         >
           <Play size={24} />
           Start
