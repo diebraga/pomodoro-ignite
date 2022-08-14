@@ -1,4 +1,4 @@
-import { Play } from 'phosphor-react'
+import { HandPalm, Play } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,6 +21,7 @@ interface CycloTypes {
   task: string
   for: number
   startDate: Date
+  interruptionDate?: Date
 }
 
 export function Home() {
@@ -50,6 +51,21 @@ export function Home() {
     setCycleId(String(cycles.length + 1))
     setAmountSecondsPassed(0)
     reset()
+  }
+  console.log(cycles)
+  function handleStopCycle(): void {
+    setCycleId(null)
+
+    setCycles(
+      cycles.map((cycle) => {
+        if (cycle.id === cycleId) {
+          return {
+            ...cycle,
+            interruptionDate: new Date(),
+          }
+        } else return cycle
+      }),
+    )
   }
 
   const activeCycle = cycles.find((cycle) => cycle.id === cycleId)
@@ -115,6 +131,7 @@ export function Home() {
             id="task"
             placeholder="Give a name to your project"
             list="task-suggestion"
+            disabled={!!activeCycle}
             {...register('task')}
           />
 
@@ -129,9 +146,8 @@ export function Home() {
             type="number"
             id="for"
             placeholder="00"
-            maxLength={60}
-            minLength={0}
             step={5}
+            disabled={!!activeCycle}
             {...register('for', { valueAsNumber: true })}
           />
 
@@ -145,15 +161,25 @@ export function Home() {
           <span>{timeDisplay().secondsFirstChar}</span>
           <span>{timeDisplay().secondsSecondChar}</span>
         </CountDownContainer>
-
-        <StartCountDownButton
-          type="submit"
-          disabled={isSubmitFormDisabled}
-          onClick={() => { }}
-        >
-          <Play size={24} />
-          Start
-        </StartCountDownButton>
+        {activeCycle ? (
+          <CountDownButton
+            type="button"
+            onClick={handleStopCycle}
+            isActiveCycle
+          >
+            <HandPalm size={24} />
+            Stop
+          </CountDownButton>
+        ) : (
+          <CountDownButton
+            type="submit"
+            disabled={isSubmitFormDisabled}
+            isActiveCycle={false}
+          >
+            <Play size={24} />
+            Start
+          </CountDownButton>
+        )}
       </form>
     </HomeContainer>
   )
@@ -212,7 +238,13 @@ const Divider = styled.div`
   justify-content: center;
 `
 
-const StartCountDownButton = styled.button`
+function isGreenOrRed(isActiveCycle: boolean): 'red' | 'green' {
+  return isActiveCycle ? 'red' : 'green'
+}
+
+const CountDownButton = styled.button<{
+  isActiveCycle: boolean
+}>`
   width: 100%;
   border: 0;
   border-radius: 8px;
@@ -227,11 +259,11 @@ const StartCountDownButton = styled.button`
 
   cursor: pointer;
 
-  background: ${(p) => p.theme['green-500']};
+  background: ${(p) => p.theme[`${isGreenOrRed(p.isActiveCycle)}-500`]};
   color: ${(p) => p.theme['gray-100']};
 
   &:not(:disabled):hover {
-    background: ${(p) => p.theme['green-700']};
+    background: ${(p) => p.theme[`${isGreenOrRed(p.isActiveCycle)}-700`]};
   }
 
   &:disabled {
