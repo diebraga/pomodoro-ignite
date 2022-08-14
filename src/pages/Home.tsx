@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useCountdown } from '../../src/hooks/useCountdown'
 
 const newCycleValidationScheme = zod.object({
   task: zod.string().min(1, 'Your task must have a name'),
@@ -15,7 +16,17 @@ const newCycleValidationScheme = zod.object({
 
 type FormTypes = zod.infer<typeof newCycleValidationScheme>
 
+interface CycloTypes {
+  id: string
+  task: string
+  for: number
+}
+
 export function Home() {
+  const [cycles, setCycles] = useState<CycloTypes[]>([])
+  const [cycleId, setCycleId] = useState<string | null>(null)
+  const [amountSecondsPassed, setAmountSecondsPassed] = useState<number>(0)
+
   const { register, handleSubmit, formState, reset } = useForm<FormTypes>({
     resolver: zodResolver(newCycleValidationScheme),
     defaultValues: {
@@ -26,10 +37,28 @@ export function Home() {
 
   const { errors, isSubmitting, isDirty } = formState
 
-  function handleCreateNewCyclo(data: any) {
-    console.log(data)
+  function handleCreateNewCyclo(data: FormTypes): void {
+    const cycle: CycloTypes = {
+      for: data.for,
+      id: String(cycles.length + 1),
+      task: data.task,
+    }
+
+    setCycles((curr) => [...curr, cycle])
+    setCycleId(String(cycles.length + 1))
     reset()
   }
+
+  const activeCycle = cycles.find((cycle) => cycle.id === cycleId)
+
+  const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
+
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondsAmount = currentSeconds / 60
+
+  const minutes = String(minutesAmount).padStart(2, '0')
+  const seconds = String(secondsAmount).padStart(2, '0')
 
   const isSubmitFormDisabled = !isDirty || isSubmitting
 
@@ -67,6 +96,8 @@ export function Home() {
             type="number"
             id="for"
             placeholder="00"
+            maxLength={60}
+            minLength={0}
             step={5}
             {...register('for', { valueAsNumber: true })}
           />
@@ -75,14 +106,18 @@ export function Home() {
         </FormContainer>
 
         <CountDownContainer>
-          <span>0</span>
-          <span>0</span>
+          <span>{minutes[0]}</span>
+          <span>{minutes[1]}</span>
           <Divider>:</Divider>
-          <span>0</span>
-          <span>0</span>
+          <span>{seconds[0]}</span>
+          <span>{seconds[0]}</span>
         </CountDownContainer>
 
-        <StartCountDownButton type="submit" disabled={isSubmitFormDisabled}>
+        <StartCountDownButton
+          type="submit"
+          disabled={isSubmitFormDisabled}
+          onClick={() => {}}
+        >
           <Play size={24} />
           Start
         </StartCountDownButton>
