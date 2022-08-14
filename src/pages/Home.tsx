@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as zod from 'zod'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { differenceInSeconds } from 'date-fns'
 
 const newCycleValidationScheme = zod.object({
@@ -48,19 +48,23 @@ export function Home() {
 
     setCycles((curr) => [...curr, cycle])
     setCycleId(String(cycles.length + 1))
+    setAmountSecondsPassed(0)
     reset()
   }
 
   const activeCycle = cycles.find((cycle) => cycle.id === cycleId)
 
   useEffect(() => {
+    let interval: number
+
     if (activeCycle) {
-      setInterval(() => {
+      interval = setInterval(() => {
         setAmountSecondsPassed(
           differenceInSeconds(new Date(), new Date(activeCycle.startDate)),
         )
       }, 1000)
     }
+    return () => clearInterval(interval)
   }, [activeCycle])
 
   const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
@@ -69,10 +73,7 @@ export function Home() {
   const minutesAmount = Math.floor(currentSeconds / 60)
   const secondsAmount = currentSeconds % 60
 
-  const minutes = String(minutesAmount).padStart(2, '0')
-  const seconds = String(secondsAmount).padStart(2, '0')
-
-  function timeDisplay() {
+  const timeDisplay = useCallback(() => {
     const minutes = String(minutesAmount).padStart(2, '0')
     const seconds = String(secondsAmount).padStart(2, '0')
 
@@ -81,10 +82,16 @@ export function Home() {
       minutesSecondChar: minutes.charAt(1),
       secondsFirstChar: seconds.charAt(0),
       secondsSecondChar: seconds.charAt(1),
+      minutes,
+      seconds,
     }
-  }
-  console.log(`${minutes.charAt(0)}${minutes.charAt(1)}`)
-  console.log(`${seconds.charAt(0)}${seconds.charAt(1)}`)
+  }, [minutesAmount, secondsAmount])
+
+  useEffect(() => {
+    if (activeCycle) {
+      document.title = `${timeDisplay().minutes}:${timeDisplay().seconds}`
+    }
+  }, [activeCycle, timeDisplay])
 
   const isSubmitFormDisabled = !isDirty || isSubmitting
 
