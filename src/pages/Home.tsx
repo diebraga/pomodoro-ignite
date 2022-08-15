@@ -22,6 +22,7 @@ interface CycloTypes {
   for: number
   startDate: Date
   interruptionDate?: Date
+  finishedDate?: Date
 }
 
 export function Home() {
@@ -41,7 +42,7 @@ export function Home() {
 
   function handleCreateNewCyclo(data: FormTypes): void {
     const cycle: CycloTypes = {
-      for: data.for,
+      for: 1,
       id: String(cycles.length + 1),
       task: data.task,
       startDate: new Date(),
@@ -56,8 +57,8 @@ export function Home() {
   function handleStopCycle(): void {
     setCycleId(null)
 
-    setCycles(
-      cycles.map((cycle) => {
+    setCycles((curr) =>
+      curr.map((cycle) => {
         if (cycle.id === cycleId) {
           return {
             ...cycle,
@@ -70,20 +71,39 @@ export function Home() {
 
   const activeCycle = cycles.find((cycle) => cycle.id === cycleId)
 
+  const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
+
   useEffect(() => {
     let interval: number
 
     if (activeCycle) {
       interval = setInterval(() => {
-        setAmountSecondsPassed(
-          differenceInSeconds(new Date(), new Date(activeCycle.startDate)),
+        const diff = differenceInSeconds(
+          new Date(),
+          new Date(activeCycle.startDate),
         )
+
+        const finishedCycle = (array: CycloTypes[]) =>
+          array.map((cycle) => {
+            if (cycle.id === cycleId) {
+              return {
+                ...cycle,
+                finishedDate: new Date(),
+              }
+            } else return cycle
+          })
+
+        if (diff >= totalSeconds) {
+          setAmountSecondsPassed(totalSeconds)
+          setCycles((curr) => finishedCycle(curr))
+        } else {
+          setAmountSecondsPassed(diff)
+        }
       }, 1000)
     }
     return () => clearInterval(interval)
-  }, [activeCycle])
+  }, [activeCycle, cycleId, cycles, totalSeconds])
 
-  const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
   const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
 
   const minutesAmount = Math.floor(currentSeconds / 60)
