@@ -7,6 +7,7 @@ import { useCountDownContext } from '../hooks/useCountDownContex'
 export function Home() {
   const { onSubmit, isSubmitFormDisabled, handleStopCycle, activeCycle } =
     useCountDownContext()
+
   return (
     <HomeContainer>
       <form onSubmit={onSubmit}>

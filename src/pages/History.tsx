@@ -1,10 +1,12 @@
-import React from 'react'
 import styled from 'styled-components'
+import { useCountDownContext } from '../hooks/useCountDownContex'
 
 export function History() {
+  const { cycles } = useCountDownContext()
+
   return (
     <HistoryContainer>
-      <h1>Hi</h1>
+      <h1>HISTORY</h1>
 
       <HistoryList>
         <table>
@@ -17,46 +19,26 @@ export function History() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Task </td>
-              <td>20 mins </td>
-              <td>2 days ago </td>
-              <td>
-                <Status statusColor="green">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Task </td>
-              <td>20 mins </td>
-              <td>2 days ago </td>
-              <td>
-                <Status statusColor="yellow">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Task </td>
-              <td>20 mins </td>
-              <td>2 days ago </td>
-              <td>
-                <Status statusColor="green">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Task </td>
-              <td>20 mins </td>
-              <td>2 days ago </td>
-              <td>
-                <Status statusColor="green">Done</Status>
-              </td>
-            </tr>
-            <tr>
-              <td>Task </td>
-              <td>20 mins </td>
-              <td>2 days ago </td>
-              <td>
-                <Status statusColor="green">Done</Status>
-              </td>
-            </tr>
+            {cycles.map((cycle) => {
+              return (
+                <tr key={cycle.id}>
+                  <td>{cycle.task}</td>
+                  <td>{cycle.for} minutes</td>
+                  <td>{cycle.startDate.toDateString()}</td>
+                  <td>
+                    {cycle.finishedDate && (
+                      <Status statusColor="green">Done</Status>
+                    )}
+                    {cycle.interruptionDate && (
+                      <Status statusColor="red">Interrupted</Status>
+                    )}
+                    {!cycle.finishedDate && !cycle.interruptionDate && (
+                      <Status statusColor="yellow">Running</Status>
+                    )}
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </HistoryList>

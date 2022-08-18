@@ -1,10 +1,4 @@
-import {
-  BaseSyntheticEvent,
-  createContext,
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-} from 'react'
+import { BaseSyntheticEvent, createContext, ReactNode } from 'react'
 import { UseFormRegister } from 'react-hook-form'
 import { CycleTypes } from '../@types/CycleTypes'
 import { useCycles } from '../hooks/useCycles'
@@ -24,11 +18,9 @@ interface CountDownContextProps {
     for: number
   }>
   activeCycle: CycleTypes | undefined
-  amountSecondsPassed: number
-  cycleId: string | null
   cycles: CycleTypes[]
-  setCycles: Dispatch<SetStateAction<CycleTypes[]>>
-  setAmountSecondsPassed: Dispatch<SetStateAction<number>>
+  minutesAmount: number
+  secondsAmount: number
 }
 
 export const CountDownContext = createContext({} as CountDownContextProps)
@@ -41,11 +33,9 @@ export function CountDownProvider({ children }: CountDownProviderProp) {
     handleStopCycle,
     register,
     activeCycle,
-    amountSecondsPassed,
-    cycleId,
     cycles,
-    setCycles,
-    setAmountSecondsPassed,
+    minutesAmount,
+    secondsAmount,
   } = useCycles()
   return (
     <CountDownContext.Provider
@@ -55,11 +45,9 @@ export function CountDownProvider({ children }: CountDownProviderProp) {
         handleStopCycle,
         register,
         activeCycle,
-        amountSecondsPassed,
-        cycleId,
         cycles,
-        setCycles,
-        setAmountSecondsPassed,
+        minutesAmount,
+        secondsAmount,
       }}
     >
       {children}

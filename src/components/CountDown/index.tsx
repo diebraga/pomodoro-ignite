@@ -1,63 +1,9 @@
-import { differenceInSeconds } from 'date-fns'
 import React, { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
-import { CycleTypes } from '../../@types/CycleTypes'
 import { useCountDownContext } from '../../hooks/useCountDownContex'
 
 export function Countdown() {
-  const {
-    activeCycle,
-    amountSecondsPassed,
-    cycleId,
-    cycles,
-    setCycles,
-    setAmountSecondsPassed,
-  } = useCountDownContext()
-
-  const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
-
-  useEffect(() => {
-    let interval: number
-
-    if (activeCycle) {
-      interval = setInterval(() => {
-        const diff = differenceInSeconds(
-          new Date(),
-          new Date(activeCycle.startDate),
-        )
-
-        const finishedCycle = (array: CycleTypes[]) =>
-          array.map((cycle) => {
-            if (cycle.id === cycleId) {
-              return {
-                ...cycle,
-                finishedDate: new Date(),
-              }
-            } else return cycle
-          })
-
-        if (diff >= totalSeconds) {
-          setAmountSecondsPassed(totalSeconds)
-          setCycles((curr) => finishedCycle(curr))
-        } else {
-          setAmountSecondsPassed(diff)
-        }
-      }, 1000)
-    }
-    return () => clearInterval(interval)
-  }, [
-    activeCycle,
-    cycleId,
-    cycles,
-    setAmountSecondsPassed,
-    setCycles,
-    totalSeconds,
-  ])
-
-  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
-
-  const minutesAmount = Math.floor(currentSeconds / 60)
-  const secondsAmount = currentSeconds % 60
+  const { activeCycle, minutesAmount, secondsAmount } = useCountDownContext()
 
   const timeDisplay = useCallback(() => {
     const minutes = String(minutesAmount).padStart(2, '0')

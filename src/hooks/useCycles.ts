@@ -6,6 +6,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { differenceInSeconds } from 'date-fns'
 
 function useCycles() {
   const [cycles, setCycles] = useState<CycleTypes[]>([])
@@ -55,6 +56,52 @@ function useCycles() {
 
   const isSubmitFormDisabled = !isDirty || isSubmitting
 
+  const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
+
+  const currentSeconds = activeCycle ? totalSeconds - amountSecondsPassed : 0
+
+  const minutesAmount = Math.floor(currentSeconds / 60)
+  const secondsAmount = currentSeconds % 60
+
+  useEffect(() => {
+    let interval: number
+
+    if (activeCycle) {
+      interval = setInterval(() => {
+        const diff = differenceInSeconds(
+          new Date(),
+          new Date(activeCycle.startDate),
+        )
+
+        const finishedCycle = (array: CycleTypes[]) =>
+          array.map((cycle) => {
+            if (cycle.id === cycleId) {
+              return {
+                ...cycle,
+                finishedDate: new Date(),
+              }
+            } else return cycle
+          })
+
+        if (diff >= totalSeconds) {
+          setAmountSecondsPassed(totalSeconds)
+          setCycles((curr) => finishedCycle(curr))
+          setCycleId(null)
+        } else {
+          setAmountSecondsPassed(diff)
+        }
+      }, 1000)
+    }
+    return () => clearInterval(interval)
+  }, [
+    activeCycle,
+    cycleId,
+    cycles,
+    setAmountSecondsPassed,
+    setCycles,
+    totalSeconds,
+  ])
+
   useEffect(() => {
     if (errors.task) {
       alert(errors.task.message)
@@ -72,11 +119,9 @@ function useCycles() {
     handleSubmit,
     activeCycle,
     handleCreateNewCyclo,
-    amountSecondsPassed,
-    cycleId,
-    setCycles,
     cycles,
-    setAmountSecondsPassed,
+    minutesAmount,
+    secondsAmount,
   }
 }
 
