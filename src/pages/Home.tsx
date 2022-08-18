@@ -1,38 +1,17 @@
 import { HandPalm, Play } from 'phosphor-react'
-import { useForm } from 'react-hook-form'
 import styled from 'styled-components'
-import { useEffect, useState } from 'react'
 import { NewCycleForm } from '../components/NewCycleForm'
 import { Countdown } from '../components/CountDown'
-import { useCycles } from '../hooks/useCycles'
+import { useCountDownContext } from '../hooks/useCountDownContex'
 
 export function Home() {
-  const {
-    isSubmitFormDisabled,
-    handleStopCycle,
-    register,
-    handleSubmit,
-    activeCycle,
-    handleCreateNewCyclo,
-    amountSecondsPassed,
-    cycleId,
-    cycles,
-    setCycles,
-    setAmountSecondsPassed,
-  } = useCycles()
-
+  const { onSubmit, isSubmitFormDisabled, handleStopCycle, activeCycle } =
+    useCountDownContext()
   return (
     <HomeContainer>
-      <form onSubmit={handleSubmit(handleCreateNewCyclo)}>
-        <NewCycleForm activeCycle={activeCycle} register={register} />
-        <Countdown
-          activeCycle={activeCycle}
-          amountSecondsPassed={amountSecondsPassed}
-          cycleId={cycleId}
-          setAmountSecondsPassed={setAmountSecondsPassed}
-          cycles={cycles}
-          setCycles={setCycles}
-        />
+      <form onSubmit={onSubmit}>
+        <NewCycleForm />
+        <Countdown />
         {activeCycle ? (
           <CountDownButton
             type="button"

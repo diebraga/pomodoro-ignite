@@ -1,13 +1,9 @@
 import styled from 'styled-components'
-import { UseFormRegister } from 'react-hook-form'
-import { CycleTypes, FormTypes } from '../../@types/CycleTypes'
+import { useCountDownContext } from '../../hooks/useCountDownContex'
 
-interface Props {
-  register: UseFormRegister<FormTypes>
-  activeCycle: CycleTypes | undefined
-}
+export function NewCycleForm() {
+  const { register, activeCycle } = useCountDownContext()
 
-export function NewCycleForm({ register, activeCycle }: Props) {
   return (
     <FormContainer>
       <label htmlFor="task">{"I'm Going to work on"}</label>

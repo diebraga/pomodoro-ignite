@@ -2,24 +2,18 @@ import { differenceInSeconds } from 'date-fns'
 import React, { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { CycleTypes } from '../../@types/CycleTypes'
+import { useCountDownContext } from '../../hooks/useCountDownContex'
 
-interface Props {
-  activeCycle: CycleTypes | undefined
-  cycleId: string | null
-  amountSecondsPassed: number
-  cycles: CycleTypes[]
-  setAmountSecondsPassed: React.Dispatch<React.SetStateAction<number>>
-  setCycles: React.Dispatch<React.SetStateAction<CycleTypes[]>>
-}
+export function Countdown() {
+  const {
+    activeCycle,
+    amountSecondsPassed,
+    cycleId,
+    cycles,
+    setCycles,
+    setAmountSecondsPassed,
+  } = useCountDownContext()
 
-export function Countdown({
-  activeCycle,
-  cycleId,
-  amountSecondsPassed,
-  cycles,
-  setAmountSecondsPassed,
-  setCycles,
-}: Props) {
   const totalSeconds = activeCycle ? activeCycle.for * 60 : 0
 
   useEffect(() => {
