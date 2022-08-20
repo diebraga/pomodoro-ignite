@@ -1,3 +1,4 @@
+import { formatDistanceToNow } from 'date-fns'
 import styled from 'styled-components'
 import { useCountDownContext } from '../hooks/useCountDownContex'
 
@@ -14,7 +15,7 @@ export function History() {
             <tr>
               <th>Task</th>
               <th>Duration</th>
-              <th>Inicio</th>
+              <th>Started</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -24,7 +25,11 @@ export function History() {
                 <tr key={cycle.id}>
                   <td>{cycle.task}</td>
                   <td>{cycle.for} minutes</td>
-                  <td>{cycle.startDate.toDateString()}</td>
+                  <td>
+                    {formatDistanceToNow(cycle.startDate, {
+                      addSuffix: true,
+                    })}
+                  </td>
                   <td>
                     {cycle.finishedDate && (
                       <Status statusColor="green">Done</Status>
